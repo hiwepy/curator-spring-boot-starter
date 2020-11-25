@@ -21,16 +21,14 @@
 
 ```yaml
 #################################################################################################
-### 虹软人脸识别 配置：
+### Apache Curator 配置：
 #################################################################################################
-shumei:
-  anti-fraud:
-    access-key: xx
-    app-id: xxx 
-    channel-txt: 
-    channel-img: 
-    channel-audio: 
-    channel-video: 
+curator:
+  connect-string: 192.168.1.1:2100,192.168.1.1:2101,192.168.1.:2102
+  connection-timeout-ms: 3000
+  session-timeout-ms: 30000
+  max-close-wait-ms: 2000
+  with-ensemble-tracker: true
 ```
 
 ##### 3、使用示例
@@ -38,63 +36,37 @@ shumei:
  
 ```java
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ishumei.spring.boot.model.AntiFraudResponse;
-import com.ishumei.spring.boot.model.BatchAntiFraudImageResponse;
-
 @SpringBootApplication
-public class ShumeiAntiFraudApplication_Test {
+public class CuratorApplication_Test {
 	
 	@Autowired
-	private ShumeiAntiFraudTemplate template;
-	@Autowired
-	private ObjectMapper objectMapper;
+	private CuratorZookeeperTemplate template;
 	
 	@PostConstruct
 	public void testText() {
-
-		try {
-
-			AntiFraudResponse response = template.opsForText().antiFraud("SOCIAL", "00001", "你妈的");
-			System.out.println(objectMapper.writeValueAsString(response));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		
 
 	}
 	
 	@PostConstruct
 	public void testImage() {
 
-		try {
-			
-			List<String> imgs = new ArrayList<String>();
-
-			imgs.add("https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1603775417273&di=d07584c12801a0a097634667ba944eb2&imgtype=0&src=http%3A%2F%2Fimg011.hc360.cn%2Fhb%2FMTQ2MDYwODAzMjY0ODE5NzM2NTMxMDE%3D.jpg");
-
-			BatchAntiFraudImageResponse response2 = template.opsForImage().antiFraud("POLITICS_PORN_AD", "00001", imgs);
-			System.out.println(objectMapper.writeValueAsString(response2));
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
+		
+		 
 	}
 	
 	public static void main(String[] args) throws Exception {
-		SpringApplication.run(ShumeiAntiFraudApplication_Test.class, args);
+		SpringApplication.run(CuratorApplication_Test.class, args);
 	}
 
 }
+
 ```
 
 ## Jeebiz 技术社区

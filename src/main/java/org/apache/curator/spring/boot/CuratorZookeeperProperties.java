@@ -67,7 +67,7 @@ public class CuratorZookeeperProperties {
 	 * Allows to configure if the ensemble configuration changes will be watched.
          * The default value is {@code true}.
 	 */
-	private boolean withEnsembleTracker;
+	private boolean withEnsembleTracker = true;
 	
 	/**
 	 * 会话超时时间（单位：毫秒），默认 30000
