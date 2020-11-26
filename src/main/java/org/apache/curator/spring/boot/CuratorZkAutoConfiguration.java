@@ -40,14 +40,14 @@ public class CuratorZkAutoConfiguration {
 				.connectString(properties.getConnectString())
 				.connectionTimeoutMs(properties.getConnectionTimeoutMs())
 				.canBeReadOnly(properties.isCanBeReadOnly())
-				.sessionTimeoutMs(properties.getSessionTimeoutMs())
 				.authorization(CollectionUtils.isEmpty(properties.getAuthInfo()) ? new ArrayList<AuthInfo>()
 						: properties.getAuthInfo().stream().map(info -> {
 							return new AuthInfo(info.getAuth(), info.getAuth().getBytes());
 						}).collect(Collectors.toList()))
 				.ensembleTracker(properties.isWithEnsembleTracker())
-				.retryPolicy(retryPolicy)
 				.namespace(properties.getNamespace())
+				.retryPolicy(retryPolicy)
+				.sessionTimeoutMs(properties.getSessionTimeoutMs())
 				.build();
 		// 2、开启连接
 		curatorClient.start();
