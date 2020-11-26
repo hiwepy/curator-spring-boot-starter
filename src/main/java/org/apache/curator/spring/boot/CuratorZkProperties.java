@@ -29,10 +29,12 @@ import lombok.Data;
  * 
  * @author ： <a href="https://github.com/hiwepy">hiwepy</a>
  */
-@ConfigurationProperties(CuratorZookeeperProperties.PREFIX)
+@ConfigurationProperties(CuratorZkProperties.PREFIX)
 @Data
-public class CuratorZookeeperProperties {
+public class CuratorZkProperties {
 
+    private static final int DEFAULT_MAX_RETRIES = 3;
+    private static final int DEFAULT_MAX_SLEEP_MS = Integer.MAX_VALUE;
 	public static final String PREFIX = "curator";
 
 	/**
@@ -87,6 +89,19 @@ public class CuratorZookeeperProperties {
 	private boolean canBeReadOnly;
 
 	private List<CuratorAuthInfo> authInfo;
+	
+	/**
+	 * initial amount of time to wait between retries
+	 */
+	private int baseSleepTimeMs = 1000;
+	/**
+	 * max number of times to retry
+	 */
+	private int maxRetries = DEFAULT_MAX_RETRIES; 
+	/**
+	 * max time in ms to sleep on each retry
+	 */
+	private int maxSleepMs = DEFAULT_MAX_SLEEP_MS;
 	
 	@Data
 	public class CuratorAuthInfo {

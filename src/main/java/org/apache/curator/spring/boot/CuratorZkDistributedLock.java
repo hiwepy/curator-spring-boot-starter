@@ -28,7 +28,7 @@ import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.Watcher.Event.KeeperState;
 import org.apache.zookeeper.data.Stat;
 
-public class ZooKeeperDistributedLock2 implements Watcher {
+public class CuratorZkDistributedLock implements Watcher {
 	
 	private CuratorFramework curatorClient;
 	private String locksRoot = "/locks";
@@ -38,15 +38,17 @@ public class ZooKeeperDistributedLock2 implements Watcher {
 	private CountDownLatch connectedLatch = new CountDownLatch(1);
 	private int sessionTimeout = 30000;
 
-	public ZooKeeperDistributedLock2(CuratorFramework curatorClient) {
+	public CuratorZkDistributedLock(CuratorFramework curatorClient, int sessionTimeout) {
 		try {
 			this.curatorClient = curatorClient;
+			this.sessionTimeout = sessionTimeout;
 			connectedLatch.await();
 		} catch (InterruptedException e) {
-			throw new LockException(e);
+			throw new CuratorLockException(e);
 		}
 	}
-
+	
+	@Override
 	public void process(WatchedEvent event) {
 		if (event.getState() == KeeperState.SyncConnected) {
 			connectedLatch.countDown();
@@ -58,30 +60,30 @@ public class ZooKeeperDistributedLock2 implements Watcher {
 		}
 	}
 
-	public void acquireDistributedLock(String productId) {
+	public void acquireLock(String lockKey) {
 		try {
-			if (this.tryLock(productId)) {
+			if (this.tryLock(lockKey)) {
 				return;
 			} else {
 				waitForLock(waitNode, sessionTimeout);
 			}
 		} catch (KeeperException e) {
-			throw new LockException(e);
+			throw new CuratorLockException(e);
 		} catch (InterruptedException e) {
-			throw new LockException(e);
+			throw new CuratorLockException(e);
 		} catch (Exception e) {
-			throw new LockException(e);
+			throw new CuratorLockException(e);
 		}
 	}
 
-	public boolean tryLock(String productId) throws Exception {
+	public boolean tryLock(String lockKey) throws Exception {
 		try {
-			// 传入进去的locksRoot + “/” + productId
-			// 假设productId代表了一个商品id，比如说1
+			// 传入进去的locksRoot + “/” + lockKey
+			// 假设lockKey代表了一个商品id，比如说1
 			// locksRoot = locks
 			// /locks/10000000000，/locks/10000000001，/locks/10000000002
 			// 创建临时有序节点
-			lockNode = curatorClient.create().withMode(CreateMode.EPHEMERAL_SEQUENTIAL).forPath(locksRoot + "/" + productId,
+			lockNode = curatorClient.create().withMode(CreateMode.EPHEMERAL_SEQUENTIAL).forPath(locksRoot + "/" + lockKey,
 					new byte[0]);
 
 			// 看看刚创建的节点是不是最小的节点
@@ -105,9 +107,9 @@ public class ZooKeeperDistributedLock2 implements Watcher {
 			
 			this.waitNode = locks.get(previousLockIndex);
 		} catch (KeeperException e) {
-			throw new LockException(e);
+			throw new CuratorLockException(e);
 		} catch (InterruptedException e) {
-			throw new LockException(e);
+			throw new CuratorLockException(e);
 		}
 		return false;
 	}
@@ -123,16 +125,16 @@ public class ZooKeeperDistributedLock2 implements Watcher {
 		return true;
 	}
 	
-	public void unlock() {
+	public boolean unlock() {
 		try {
 			// 删除/locks/10000000000节点
-			// 删除/locks/10000000001节点
-			System.out.println("unlock " + lockNode);
 			curatorClient.delete().forPath(lockNode);
 			lockNode = null;
+			return true;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return false;
 	}
 
 }

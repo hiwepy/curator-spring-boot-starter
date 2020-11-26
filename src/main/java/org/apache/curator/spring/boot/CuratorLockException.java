@@ -15,14 +15,14 @@
  */
 package org.apache.curator.spring.boot;
 
-public class LockException extends RuntimeException {
+public class CuratorLockException extends RuntimeException {
 	private static final long serialVersionUID = 1L;
 
-	public LockException(String e) {
+	public CuratorLockException(String e) {
 		super(e);
 	}
 
-	public LockException(Exception e) {
+	public CuratorLockException(Exception e) {
 		super(e);
 	}
 }

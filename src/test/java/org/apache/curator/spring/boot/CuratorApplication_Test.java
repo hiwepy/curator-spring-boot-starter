@@ -25,7 +25,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class CuratorApplication_Test {
 	
 	@Autowired
-	private CuratorZookeeperTemplate template;
+	private CuratorZkTemplate template;
 	
 	@PostConstruct
 	public void testText() {
