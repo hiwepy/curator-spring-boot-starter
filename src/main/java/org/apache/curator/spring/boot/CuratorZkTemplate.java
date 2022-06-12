@@ -24,7 +24,7 @@ public class CuratorZkTemplate {
 	private CuratorFramework curatorClient;
 	private RetryPolicy retryPolicy;
 	private int sessionTimeout = 30000;
-	
+
 	public CuratorZkTemplate(CuratorFramework curatorClient, RetryPolicy retryPolicy, int sessionTimeout) {
 		this.curatorClient = curatorClient;
 		this.retryPolicy = retryPolicy;
@@ -34,10 +34,10 @@ public class CuratorZkTemplate {
 	public CuratorZkDistributedLock getDistributedLock() {
 		return new CuratorZkDistributedLock(curatorClient, sessionTimeout);
 	}
-	
+
 	/**
 	 * 共享锁，不可重入--- InterProcessSemaphoreMutex
-	 * 
+	 *
 	 * @param lockKey
 	 * @return
 	 */
@@ -47,7 +47,7 @@ public class CuratorZkTemplate {
 
 	/**
 	 * 共享可重入锁--- InterProcessMutex
-	 * 
+	 *
 	 * @param lockKey
 	 * @return
 	 */
@@ -57,7 +57,7 @@ public class CuratorZkTemplate {
 
 	/**
 	 * 共享可重入读写锁--- InterProcessMutex
-	 * 
+	 *
 	 * @param lockKey
 	 * @return
 	 */
@@ -67,7 +67,7 @@ public class CuratorZkTemplate {
 
 	/**
 	 * 共享信号量--- InterProcessSemaphoreV2
-	 * 
+	 *
 	 * @param lockKey
 	 * @return
 	 */
@@ -78,8 +78,8 @@ public class CuratorZkTemplate {
 
 	/**
 	 * 多重共享锁--- InterProcessMultiLock
-	 * 
-	 * @param lockKey
+	 *
+	 * @param locks
 	 * @return
 	 */
 	public InterProcessMultiLock getSharedSemaphore(InterProcessLock... locks) {
@@ -94,11 +94,11 @@ public class CuratorZkTemplate {
 	public DistributedDoubleBarrier getDoubleBarrier(String barrierPath, int memberQty) {
 		return new DistributedDoubleBarrier(curatorClient, barrierPath, memberQty);
 	}
-	
+
 	public DistributedAtomicInteger getAtomicInteger(String lockKey) {
 		return new DistributedAtomicInteger(curatorClient, lockKey, retryPolicy);
 	}
-	
+
 	public DistributedAtomicLong getAtomicLong(String lockKey) {
 		return new DistributedAtomicLong(curatorClient, lockKey, retryPolicy);
 	}
