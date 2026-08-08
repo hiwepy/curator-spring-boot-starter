@@ -28,16 +28,37 @@ import org.apache.zookeeper.Watcher;
 import org.apache.zookeeper.Watcher.Event.KeeperState;
 import org.apache.zookeeper.data.Stat;
 
+/**
+ * A ZooKeeper-based distributed lock implementation that creates ephemeral sequential
+ * nodes under a root path and grants the lock to the lowest-numbered node, waiting on
+ * its predecessor otherwise.
+ *
+ * @author <a href="https://github.com/loong10k">@Loong Wan</a>
+ * @since 1.0.0
+ */
 public class CuratorZkDistributedLock implements Watcher {
-	
+
+	/** The curator client used to interact with ZooKeeper. */
 	private CuratorFramework curatorClient;
+	/** Root znode path under which lock nodes are created. */
 	private String locksRoot = "/locks";
+	/** The predecessor node this lock is currently waiting on. */
 	private String waitNode;
+	/** The ephemeral sequential node representing this lock holder. */
 	private String lockNode;
+	/** Latch used to block until the predecessor node is removed. */
 	private CountDownLatch latch;
+	/** Latch used to block until the client has synchronously connected. */
 	private CountDownLatch connectedLatch = new CountDownLatch(1);
+	/** Session timeout in milliseconds. */
 	private int sessionTimeout = 30000;
 
+	/**
+	 * Creates a distributed lock and blocks until the curator client has synchronously
+	 * connected to ZooKeeper.
+	 * @param curatorClient the curator client
+	 * @param sessionTimeout the session timeout in milliseconds
+	 */
 	public CuratorZkDistributedLock(CuratorFramework curatorClient, int sessionTimeout) {
 		try {
 			this.curatorClient = curatorClient;
@@ -47,7 +68,12 @@ public class CuratorZkDistributedLock implements Watcher {
 			throw new CuratorLockException(e);
 		}
 	}
-	
+
+	/**
+	 * Handles ZooKeeper watch events, releasing the connect latch on sync-connected and
+	 * the wait latch on subsequent notifications.
+	 * @param event the watched event
+	 */
 	@Override
 	public void process(WatchedEvent event) {
 		if (event.getState() == KeeperState.SyncConnected) {
@@ -60,6 +86,10 @@ public class CuratorZkDistributedLock implements Watcher {
 		}
 	}
 
+	/**
+	 * Acquires the distributed lock for the given key, blocking until it is obtained.
+	 * @param lockKey the lock key (typically a business identifier)
+	 */
 	public void acquireLock(String lockKey) {
 		try {
 			if (this.tryLock(lockKey)) {
@@ -76,6 +106,14 @@ public class CuratorZkDistributedLock implements Watcher {
 		}
 	}
 
+	/**
+	 * Attempts to acquire the distributed lock for the given key without blocking;
+	 * when this holder is not the lowest-numbered node the predecessor is recorded for
+	 * later waiting.
+	 * @param lockKey the lock key
+	 * @return {@code true} if the lock was acquired
+	 * @throws Exception if ZooKeeper interaction fails
+	 */
 	public boolean tryLock(String lockKey) throws Exception {
 		try {
 			// 传入进去的locksRoot + “/” + lockKey
@@ -114,8 +152,15 @@ public class CuratorZkDistributedLock implements Watcher {
 		return false;
 	}
 
+	/**
+	 * Blocks until the predecessor node no longer exists or the wait time elapses.
+	 * @param waitNode the predecessor node to wait on
+	 * @param waitTime the maximum time to wait in milliseconds
+	 * @return {@code true} once the wait completes
+	 * @throws Exception if ZooKeeper interaction fails
+	 */
 	private boolean waitForLock(String waitNode, long waitTime) throws Exception {
-		
+
 		Stat stat = curatorClient.checkExists().forPath(locksRoot + "/" + waitNode);
 		if (stat != null) {
 			this.latch = new CountDownLatch(1);
@@ -124,7 +169,11 @@ public class CuratorZkDistributedLock implements Watcher {
 		}
 		return true;
 	}
-	
+
+	/**
+	 * Releases the distributed lock by deleting this holder's ephemeral node.
+	 * @return {@code true} if the lock node was successfully removed
+	 */
 	public boolean unlock() {
 		try {
 			// 删除/locks/10000000000节点

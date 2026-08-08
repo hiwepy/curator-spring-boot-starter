@@ -15,13 +15,27 @@
  */
 package org.apache.curator.spring.boot;
 
+/**
+ * Runtime exception raised when a distributed lock operation fails.
+ *
+ * @author <a href="https://github.com/loong10k">@Loong Wan</a>
+ * @since 1.0.0
+ */
 public class CuratorLockException extends RuntimeException {
 	private static final long serialVersionUID = 1L;
 
+	/**
+	 * Creates a new lock exception with the given detail message.
+	 * @param e the detail message
+	 */
 	public CuratorLockException(String e) {
 		super(e);
 	}
 
+	/**
+	 * Creates a new lock exception wrapping the given cause.
+	 * @param e the cause of this exception
+	 */
 	public CuratorLockException(Exception e) {
 		super(e);
 	}

@@ -25,9 +25,11 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import lombok.Data;
 
 /**
- * https://www.ishumei.com/
- * 
- * @author [@Loong Wan](https://github.com/loong10k)
+ * Configuration properties for the Apache Curator ZooKeeper client, bound under the
+ * {@value #PREFIX} prefix.
+ *
+ * @author <a href="https://github.com/loong10k">@Loong Wan</a>
+ * @since 1.0.0
  */
 @ConfigurationProperties(CuratorZkProperties.PREFIX)
 @Data
@@ -35,26 +37,27 @@ public class CuratorZkProperties {
 
     private static final int DEFAULT_MAX_RETRIES = 3;
     private static final int DEFAULT_MAX_SLEEP_MS = Integer.MAX_VALUE;
+	/** Configuration property prefix for Curator options. */
 	public static final String PREFIX = "curator";
 
 	/**
 	 * As ZooKeeper is a shared space, users of a given cluster should stay within
-         * a pre-defined namespace. If a namespace is set here, all paths will get pre-pended
-         * with the namespace
+     * a pre-defined namespace. If a namespace is set here, all paths will get pre-pended
+     * with the namespace
 	 */
 	private String namespace;
-	
+
 	/**
 	 * time to wait during close to join background threads
 	 */
 	private int maxCloseWaitMs;
-	
+
 	/**
 	 * Set a timeout for {@link CuratorZookeeperClient#close(int)}  }.
-         * The default is 0, which means that this feature is disabled.
+     * The default is 0, which means that this feature is disabled.
 	 */
 	private int waitForShutdownTimeoutMs;
-	
+
 	/**
 	 * new simulated session expiration percentage
 	 */
@@ -64,22 +67,18 @@ public class CuratorZkProperties {
 	 * 192.168.1.1:2100,192.168.1.1:2101,192.168.1.:2102
 	 */
 	private String connectString;
-	
+
 	/**
 	 * Allows to configure if the ensemble configuration changes will be watched.
-         * The default value is {@code true}.
+     * The default value is {@code true}.
 	 */
 	private boolean withEnsembleTracker = true;
-	
-	/**
-	 * 会话超时时间（单位：毫秒），默认 30000
-	 */
+
+	/** Session timeout in milliseconds, default 30000. */
 	private int sessionTimeoutMs = 30000;
-	/**
-	 * 连接超时时间（单位：毫秒），默认 3000
-	 */
+	/** Connection timeout in milliseconds, default 3000. */
 	private int connectionTimeoutMs = 3000;
-	
+
 	/**
 	 * if true, allow ZooKeeper client to enter
      *                      read only mode in case of a network partition. See
@@ -88,8 +87,9 @@ public class CuratorZkProperties {
 	 */
 	private boolean canBeReadOnly;
 
+	/** List of authentication credentials to use when connecting. */
 	private List<CuratorAuthInfo> authInfo;
-	
+
 	/**
 	 * initial amount of time to wait between retries
 	 */
@@ -97,18 +97,23 @@ public class CuratorZkProperties {
 	/**
 	 * max number of times to retry
 	 */
-	private int maxRetries = DEFAULT_MAX_RETRIES; 
+	private int maxRetries = DEFAULT_MAX_RETRIES;
 	/**
 	 * max time in ms to sleep on each retry
 	 */
 	private int maxSleepMs = DEFAULT_MAX_SLEEP_MS;
-	
+
+	/**
+	 * Authentication credential for a Curator/ZooKeeper connection.
+	 */
 	@Data
 	public class CuratorAuthInfo {
-		
+
+		/** Authentication scheme, e.g. {@code digest}. */
 		private String    scheme;
+		/** Authentication credential string. */
 		private String    auth;
-		
+
 	}
 
 }

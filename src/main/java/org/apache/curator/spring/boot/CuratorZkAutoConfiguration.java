@@ -18,11 +18,25 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.CollectionUtils;
 
+/**
+ * Spring Boot auto-configuration for the Apache Curator ZooKeeper client.
+ * <p>Activates when the Curator and ZooKeeper classes are on the classpath and
+ * registers the retry policy, the {@link CuratorFramework} client and a
+ * {@link CuratorZkTemplate} convenience wrapper.</p>
+ *
+ * @author <a href="https://github.com/loong10k">@Loong Wan</a>
+ * @since 1.0.0
+ */
 @Configuration
 @ConditionalOnClass({CuratorFramework.class, RetryPolicy.class, InterProcessLock.class, ZooKeeper.class})
 @EnableConfigurationProperties(CuratorZkProperties.class)
 public class CuratorZkAutoConfiguration {
 
+	/**
+	 * Creates an exponential backoff retry policy configured from the bound properties.
+	 * @param properties the curator properties providing retry timing and count
+	 * @return the configured retry policy
+	 */
 	@Bean
 	@ConditionalOnMissingBean
 	public RetryPolicy retryPolicy(CuratorZkProperties properties) {
@@ -30,7 +44,15 @@ public class CuratorZkAutoConfiguration {
 		RetryPolicy retryPolicy = new ExponentialBackoffRetry(properties.getBaseSleepTimeMs(), properties.getMaxRetries(), properties.getMaxSleepMs());
 		return retryPolicy;
 	}
-	
+
+	/**
+	 * Creates and starts the {@link CuratorFramework} client using the bound properties
+	 * and retry policy, applying connection string, timeouts, namespace and any
+	 * configured authentication information.
+	 * @param properties the curator properties
+	 * @param retryPolicy the retry policy to use
+	 * @return the started curator client
+	 */
 	@Bean
 	@ConditionalOnMissingBean
 	public CuratorFramework curatorClient(CuratorZkProperties properties, RetryPolicy retryPolicy) {
@@ -58,9 +80,17 @@ public class CuratorZkAutoConfiguration {
 		return curatorClient;
 	}
 
+	/**
+	 * Creates a {@link CuratorZkTemplate} that exposes distributed lock, barrier and
+	 * atomic value helpers backed by the curator client.
+	 * @param properties the curator properties
+	 * @param curatorClient the curator client
+	 * @param retryPolicy the retry policy
+	 * @return the curator template bean
+	 */
 	@Bean
 	public CuratorZkTemplate curatorZkTemplate(CuratorZkProperties properties, CuratorFramework curatorClient, RetryPolicy retryPolicy) {
 		return new CuratorZkTemplate(curatorClient, retryPolicy, properties.getSessionTimeoutMs());
 	}
-	
+
 }
