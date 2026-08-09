@@ -107,7 +107,7 @@ public class CuratorZkProperties {
 	 * Authentication credential for a Curator/ZooKeeper connection.
 	 */
 	@Data
-	public class CuratorAuthInfo {
+	public static class CuratorAuthInfo {
 
 		/** Authentication scheme, e.g. {@code digest}. */
 		private String    scheme;
