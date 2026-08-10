@@ -27,7 +27,7 @@ import static org.mockito.Mockito.lenient;
 /**
  * Unit tests for {@link CuratorZkTemplate}.
  *
- * @author <a href="https://github.com/loong10k">@Loong Wan</a>
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
  */
 @ExtendWith(MockitoExtension.class)

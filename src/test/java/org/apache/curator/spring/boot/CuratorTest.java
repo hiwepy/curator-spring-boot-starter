@@ -14,7 +14,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Integration test for Curator ZooKeeper operations.
  * <p>Requires a running ZooKeeper instance. Disabled by default for unit testing.</p>
  *
- * @author <a href="https://github.com/loong10k">@Loong Wan</a>
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
  */
 @Disabled("Requires a running ZooKeeper instance")

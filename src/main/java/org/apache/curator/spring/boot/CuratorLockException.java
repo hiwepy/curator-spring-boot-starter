@@ -18,7 +18,7 @@ package org.apache.curator.spring.boot;
 /**
  * Runtime exception raised when a distributed lock operation fails.
  *
- * @author <a href="https://github.com/loong10k">@Loong Wan</a>
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
  */
 public class CuratorLockException extends RuntimeException {

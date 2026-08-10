@@ -20,7 +20,7 @@ import org.apache.curator.framework.recipes.locks.InterProcessSemaphoreV2;
  * Template exposing Curator's distributed primitives (locks, barriers and atomic
  * values) backed by a {@link CuratorFramework} client.
  *
- * @author <a href="https://github.com/loong10k">@Loong Wan</a>
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
  */
 public class CuratorZkTemplate {

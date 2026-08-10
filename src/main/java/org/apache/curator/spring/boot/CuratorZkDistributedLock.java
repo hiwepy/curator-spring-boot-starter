@@ -33,7 +33,7 @@ import org.apache.zookeeper.data.Stat;
  * nodes under a root path and grants the lock to the lowest-numbered node, waiting on
  * its predecessor otherwise.
  *
- * @author <a href="https://github.com/loong10k">@Loong Wan</a>
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  * @since 1.0.0
  */
 public class CuratorZkDistributedLock implements Watcher {
