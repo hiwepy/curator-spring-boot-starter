@@ -27,7 +27,7 @@ import lombok.Data;
 /**
  * https://www.ishumei.com/
  * 
- * @author [@Loong Wan](https://github.com/loong10k)
+ * @author <a href="https://github.com/loong10k">Loong Wan</a>
  */
 @ConfigurationProperties(CuratorZkProperties.PREFIX)
 @Data
